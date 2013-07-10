@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/new/icons">
+        <file>icons/aacblock_big.png</file>
+        <file>icons/aacblock_middle.png</file>
+        <file>icons/aacblock_small.png</file>
+    </qresource>
+</RCC>
