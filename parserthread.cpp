@@ -4,6 +4,7 @@
 parserThread::parserThread(QObject *parent) :
     QThread(parent)
 {
+    this->Running = false;
 }
 
 parserThread::~parserThread()
