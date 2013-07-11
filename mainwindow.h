@@ -49,6 +49,7 @@ private:
     int whitelistcounter;
     parserThread* m_thread;
     bool error;
+    bool isSaved;
     processsimthread* processSimThread;
 };
 

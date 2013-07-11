@@ -14,12 +14,14 @@ MainWindow::MainWindow(QWidget *parent) :
               << "http://securemecca.com/Downloads/hosts.txt"
               << "http://www.hostsfile.org/Downloads/hosts.txt"
               << "http://adblock.gjtech.net/?format=hostfile"
-              << "http://sites.google.com/site/logroid/files/hosts.txt";
+              << "http://sites.google.com/site/logroid/files/hosts.txt"
+              << "http://hosts-file.net/ad_servers.asp"
+              << "http://sysctl.org/cameleon/hosts";
 
     hostfileheader= "http://hastebin.com/raw/pamiyalafa";
 
-    whitelist << "http://smarthosts.googlecode.com/svn/trunk/mobile_devices/hosts"
-              << "http://veryhost.googlecode.com/files/android.txt"
+    whitelist << "https://smarthosts.googlecode.com/svn/trunk/hosts"
+              << "https://veryhost.googlecode.com/files/windwos.txt"
               << "http://hostsx.googlecode.com/svn/trunk/hosts";
 
     ui->label_2->setStyleSheet("QLabel { color : red; }");
@@ -31,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent) :
     processSimThread = new processsimthread(this);
 
     error = false;
+    isSaved = false;
 
     connect(processSimThread, SIGNAL(ProcessValueChanged(int)), this, SLOT(workingProcessBar(int)));
     connect(m_thread, SIGNAL(parserfinished(QString,int)), this, SLOT(ParserReady(QString,int)));
@@ -97,28 +100,33 @@ void MainWindow::ParserReady(QString result, int type)
                 }
                 else {
                     //Finish Processing Lists
-                    QString filename =  QDir::tempPath () +
-                                        (QString)QDir::separator() +
-                                        QUuid::createUuid().toString() + ".txt";
-                    qDebug() << filename;
-                    QFile file(filename);
-                    file.open(QIODevice::WriteOnly | QIODevice::Text);
-                    QTextStream out(&file);
-                    out << hostfile << endl;
-                    file.close();
+                    if (!isSaved)
+                    {
+                        QString filename =  QDir::tempPath () +
+                                            (QString)QDir::separator() +
+                                            QUuid::createUuid().toString() + ".txt";
+                        qDebug() << filename;
+                        QFile file(filename);
+                        file.open(QIODevice::WriteOnly | QIODevice::Text);
+                        QTextStream out(&file);
+                        out << hostfile << endl;
+                        file.close();
 
-                    processSimThread->Stop = true;
+                        processSimThread->Stop = true;
 
-                    QProcess copyProcess;
-                    copyProcess.start("gksu \"mv " + filename + " /etc/hosts\"");
-                    while( copyProcess.waitForFinished());
-                    copyProcess.close();
+                        QProcess copyProcess;
+                        copyProcess.start("gksu \"mv " + filename + " /etc/hosts\"");
+                        while( copyProcess.waitForFinished());
+                        copyProcess.close();
+                    }
+                    isSaved = true;
 
                     ui->pushButton->setEnabled(true);
                     ui->label_2->setStyleSheet("QLabel { color : green; }");
                     ui->label_2->setText("Process finished!");
                     ui->progressBar_2->setValue(0);
                     ui->progressBar_2->setVisible(false);
+
 
                 }
                 whitelistcounter++;
@@ -152,6 +160,7 @@ void MainWindow::DownloadFinish(QString FileData,int type)
 void MainWindow::on_pushButton_clicked()
 {
     error = false;
+    isSaved = false;
     blacklistcounter = 0;
     whitelistcounter = 0;
     ui->pushButton->setEnabled(false);
