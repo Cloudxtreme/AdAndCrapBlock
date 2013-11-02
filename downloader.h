@@ -5,6 +5,8 @@
 #include <QDebug>
 #include <QNetworkAccessManager>
 #include <QtNetwork/QNetworkReply>
+#include <QStringList>
+#include <QFile>
 
 class downloader : public QObject
 {
@@ -12,12 +14,11 @@ class downloader : public QObject
 public:
     explicit downloader(QObject *parent = 0);
     ~downloader();
-    void Download(QUrl urls, int filetype);
+    void Download(QUrl, QString);
 
 signals:
     void downloadProgressChanged(int);
-    void errorNow(QString);
-    void downloadCompleted(QString, int);
+    void downloadCompleted(bool);
 
 public slots:
     void downloadProgress ( qint64, qint64 );
@@ -27,11 +28,7 @@ public slots:
 private:
     QNetworkAccessManager* m_NetworkManager;
     QNetworkReply* m_reply;
-
-    //File Type 1 = Header File
-    //File Type 2 = BlackList File
-    //File Type 3 = WhiteList File
-    int m_filetype;
+    QString m_saveToFileName;
 };
 
 #endif // DOWNLOADER_H

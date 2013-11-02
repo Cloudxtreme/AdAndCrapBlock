@@ -17,12 +17,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
         downloader.cpp \
     parserthread.cpp \
-    processsimthread.cpp
+    processsimthread.cpp \
+    pathhelper.cpp
 
 HEADERS  += mainwindow.h \
     downloader.h \
     parserthread.h \
-    processsimthread.h
+    processsimthread.h \
+    pathhelper.h
 
 FORMS    += mainwindow.ui
 

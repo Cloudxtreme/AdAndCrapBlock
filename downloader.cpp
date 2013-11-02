@@ -7,23 +7,21 @@ downloader::downloader(QObject *parent) :
     m_NetworkManager = new QNetworkAccessManager( this );
 }
 
-
 //DeConstructor
 downloader::~downloader()
 {
     delete m_NetworkManager;
+    m_saveToFileName = QString();
 }
 
 //Methods
-void downloader::Download(QUrl url, int filetype)
+void downloader::Download(QUrl url, QString saveToFileName)
 {
-
-    m_filetype = filetype;
     QNetworkRequest request;
     request.setUrl(url);
 
     m_reply = m_NetworkManager->get( request );
-
+    m_saveToFileName = saveToFileName;
     connect( m_reply, SIGNAL(error(QNetworkReply::NetworkError)),
              this, SLOT(error(QNetworkReply::NetworkError)));
     connect( m_reply, SIGNAL(downloadProgress(qint64,qint64)),
@@ -32,8 +30,6 @@ void downloader::Download(QUrl url, int filetype)
              this, SLOT(downloadFinish()));
 
 }
-
-
 
 //Slots
 void downloader::downloadProgress ( qint64 bytesReceived, qint64 bytesTotal )
@@ -51,25 +47,24 @@ void downloader::downloadProgress ( qint64 bytesReceived, qint64 bytesTotal )
 
 void downloader::error (QNetworkReply::NetworkError code )
 {
-    //emit errorNow(m_reply->errorString());
     qDebug() << m_reply->errorString();
-    emit downloadCompleted("", m_filetype);
+    emit downloadCompleted(false);
 }
 
 void downloader::downloadFinish()
 {
+    qDebug() << m_saveToFileName;
     QByteArray fileData;
     fileData = m_reply->readAll();
-    QString datastring;
-    datastring = (QString::fromUtf8(fileData));
 
-    if (m_filetype == 1) {
-        if (datastring.length() == 0) {
-            emit errorNow("You have no Internet Connection?!"); // no Internet Connection
-            return;
-        }
-    }
-    emit downloadCompleted(datastring, m_filetype);
+    QFile file(m_saveToFileName);
+    file.open( QIODevice::WriteOnly );
+    file.write( fileData );
+    file.flush();
+    file.close();
+
+    m_reply->deleteLater();
+    m_reply = NULL;
+
+    emit downloadCompleted(true);
 }
-
-

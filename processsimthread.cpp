@@ -24,7 +24,7 @@ void processsimthread::run()
        if (counter == 100) {
            counter = 0;
        }
-       emit ProcessValueChanged(counter);
+       emit processValueChanged(counter);
        mutex.unlock();
        QThread::msleep(100);
 

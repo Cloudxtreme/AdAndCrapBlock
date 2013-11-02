@@ -1,100 +1,153 @@
 #include "parserthread.h"
 
-
 parserThread::parserThread(QObject *parent) :
     QThread(parent)
 {
-    this->Running = false;
+    this->running = false;
 }
 
 parserThread::~parserThread()
 {
-    m_sourceString = QString(); // string set to null
+    m_saveToFileName = QString();
+    m_path = QDir();
+}
+
+void parserThread::setSavePath(QDir path, QString saveToFileName)
+{
+    m_saveToFileName = saveToFileName;
+    m_path = path;
 }
 
 void parserThread::run()
 {
-    this->Running = true;
+    this->running = true;
     QMutex mutex;
     mutex.lock();
 
-    if (!m_sourceString.isNull())
+    QStringList txtFiles = m_path.entryList();
+    QString editeddata;
+    QStringList editeddatalist;
+    QString line;
+    QStringList splittlist;
+    QString splittStr;
+    QString subStr;
+    QString IP;
+    QString HostName;
+
+    bool isNumber = false;
+
+    int parts = 0;
+    int value = 0;
+
+
+    for (int i =0; i < txtFiles.length(); i++)
     {
-
-        QTextStream in (&m_sourceString);
-
-        QString editeddata;
-        QStringList editeddatalist;
-        QString line;
-        QStringList splittlist;
-        QString splittStr;
-
-        int parts = 0;
-
-        switch(m_filetype)
+        qDebug() << m_path.canonicalPath() + m_path.separator() + txtFiles[i];
+        QFile inputFile(m_path.canonicalPath() + m_path.separator() + txtFiles[i]);
+        if (inputFile.open(QIODevice::ReadOnly))
         {
-        case 1:  //File Type 1 = Header File
-            editeddata = m_sourceString + "\n";
-            break;
-
-        case 2:  //File Type 2 = BlackList File
+            QTextStream in(&inputFile);
             while ( !in.atEnd() )
             {
+                IP = "";
                 line = in.readLine();
-                if (line.startsWith("127.0.0.1"))
-                {
-                    if (!editeddatalist.contains(line))
-                        editeddatalist << line;
-                }
-            }
-            in.flush();
-            editeddata = editeddatalist.join("\n");
-            editeddatalist.clear();
-            break;
+                line = line.trimmed(); //trim whitespaces!
 
-        case 3:  //File Type 3 = WhiteList File
-            while ( !in.atEnd() )
-            {
-                line = in.readLine();
-                //IP Check
-                splittlist = line.split(QRegExp("\\s"));
-                if (splittlist.length() > 0)
+                // Checks if first char is a number
+                subStr = ((line.constData())[0]).toAscii();
+                value = subStr.toInt(&isNumber);
+                if (isNumber)
                 {
-                    splittStr = splittlist[0];
-                    qDebug() << splittStr;
-                    splittlist.clear();
-                    splittlist = splittStr.split(".");
-                    parts = splittlist.length();
-                    qDebug() << parts;
-                    if (parts == 4)
+                    subStr = line.mid(0,5);
+                    //ok it'S a IP
+                    if (subStr.contains('.'))
                     {
-                        if (!editeddatalist.contains(line))
-                            editeddatalist << line;
+                        splittlist = line.split(QRegExp("\\s"));
+                        if (splittlist.length() > 1)
+                        {
+                            splittStr = splittlist[0];
+                            qDebug() << splittStr;
+                            // save the rest of the String for Later!
+                            subStr = splittlist[1];
+                            subStr = subStr.trimmed();
+
+                            splittlist.clear();
+                            splittlist = splittStr.split(".");
+                            parts = splittlist.length();
+                            qDebug() << parts;
+                            // IP Check
+                            if (parts == 4)
+                            {
+                                // Build the clean IP String
+                                IP = splittlist.join(".");
+                                qDebug() << IP;
+                            }
+                            splittlist.clear();
+
+                            //cut out commants crap
+                            value = subStr.indexOf("#");
+                            if (value > 0)
+                            {
+                                subStr = subStr.mid(0, value - 1);
+
+                            }
+                            if (subStr == "localhost")
+                            {
+                                HostName = subStr;
+                                line = IP + " " + HostName;
+                                if (!editeddatalist.contains(line))
+                                     editeddatalist << line;
+                            }
+                            else
+                            {
+                                splittlist = subStr.split(".");
+                                parts = splittlist.length();
+                                if (parts >= 2)
+                                {
+                                    // OK! is a vailed HostName
+                                    HostName = subStr;
+                                    if (IP.length() != 0)
+                                    {
+                                        // Yeah! all work is Done .. for this Line !!
+                                        line = IP + " " + HostName;
+                                        if (!editeddatalist.contains(line))
+                                             editeddatalist << line;
+                                    }
+                                }
+                                splittlist.clear();
+                            }
+                        }
                     }
                 }
             }
             in.flush();
-            editeddata = editeddatalist.join("\n");
-            editeddatalist.clear();
-            break;
-
         }
-        //push out!
-        emit parserfinished(editeddata, m_filetype);
-
-        //Cleaning Memory!!
-        editeddata = QString();
-        editeddatalist = QStringList();
-        line  = QString();
-        splittlist = QStringList();
-        splittStr = QString();
+        inputFile.close();
     }
-    mutex.unlock();
-    this->Running = false;
-}
+    editeddata = editeddatalist.join("\n");
+    editeddatalist.clear();
+    QByteArray data = editeddata.toUtf8();
 
-void parserThread::SetStringToParse(QString StringToParse, int type)
-{
-    m_sourceString = StringToParse;
-    m_filetype = type;
+    QFile file(m_saveToFileName);
+    file.open( QIODevice::WriteOnly );
+    file.write(data);
+    file.flush();
+    file.close();
+
+    emit finished(m_saveToFileName);
+
+    //Cleaning Memory!!
+    data = QByteArray();
+    editeddata = QString();
+    editeddatalist = QStringList();
+    txtFiles = QStringList();
+    line  = QString();
+    splittlist = QStringList();
+    splittStr = QString();
+    IP = QString();
+    HostName = QString();
+    subStr = QString();
+
+    mutex.unlock();
+    this->running = false;
 }

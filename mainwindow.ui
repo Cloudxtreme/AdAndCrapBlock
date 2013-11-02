@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>646</width>
-    <height>476</height>
+    <width>420</width>
+    <height>191</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,104 +21,67 @@
    <locale language="English" country="UnitedStates"/>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QWidget" name="layoutWidget">
+   <widget class="QProgressBar" name="progressBar_2">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>631</width>
-      <height>392</height>
+      <x>20</x>
+      <y>30</y>
+      <width>371</width>
+      <height>25</height>
      </rect>
     </property>
-    <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0">
-      <layout class="QVBoxLayout" name="verticalLayout">
-       <item>
-        <widget class="QLabel" name="label_2">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="text">
-          <string>Please wait while processing...</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QProgressBar" name="progressBar_2">
-         <property name="value">
-          <number>0</number>
-         </property>
-         <property name="format">
-          <string>working</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="1" column="0">
-      <layout class="QVBoxLayout" name="verticalLayout_4">
-       <item>
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string>Process Log:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPlainTextEdit" name="plainTextEdit">
-         <property name="frameShadow">
-          <enum>QFrame::Plain</enum>
-         </property>
-         <property name="lineWidth">
-          <number>0</number>
-         </property>
-         <property name="verticalScrollBarPolicy">
-          <enum>Qt::ScrollBarAlwaysOn</enum>
-         </property>
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_4">
-         <property name="text">
-          <string>Process Status:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QProgressBar" name="progressBar">
-         <property name="value">
-          <number>0</number>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="2" column="0">
-      <layout class="QVBoxLayout" name="verticalLayout_5">
-       <item>
-        <widget class="QPushButton" name="pushButton">
-         <property name="text">
-          <string>Update Host File</string>
-         </property>
-         <property name="icon">
-          <iconset theme="Faenza">
-           <normaloff>../../../../usr/share/icons/Faenza/actions/24/player_play.png</normaloff>../../../../usr/share/icons/Faenza/actions/24/player_play.png</iconset>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>created by memoryleakx</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-    </layout>
+    <property name="value">
+     <number>0</number>
+    </property>
+    <property name="format">
+     <string>working</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>60</y>
+      <width>271</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Update Host File</string>
+    </property>
+    <property name="icon">
+     <iconset theme="Faenza">
+      <normaloff>../../../../usr/share/icons/Faenza/actions/24/player_play.png</normaloff>../../../../usr/share/icons/Faenza/actions/24/player_play.png</iconset>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>0</y>
+      <width>641</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Please wait while processing...</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>100</y>
+      <width>151</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>created by memoryleakx</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -126,8 +89,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>646</width>
-     <height>27</height>
+     <width>420</width>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

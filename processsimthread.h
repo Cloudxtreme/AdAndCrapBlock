@@ -14,7 +14,7 @@ public:
     bool Stop;
 
 signals:
-    void ProcessValueChanged(int);
+    void processValueChanged(int);
 };
 
 #endif // PROCESSSIMTHREAD_H

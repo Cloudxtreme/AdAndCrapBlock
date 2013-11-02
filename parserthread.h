@@ -8,6 +8,9 @@
 #include <QRegExp>
 #include <QDebug>
 #include <QMutex>
+#include <QDir>
+#include <QByteArray>
+
 class parserThread : public QThread
 {
     Q_OBJECT
@@ -15,17 +18,17 @@ public:
     explicit parserThread(QObject *parent = 0);
     ~parserThread();
     void run();
-    bool Running;
-    void SetStringToParse(QString,int);
+    bool running;
+    void setSavePath(QDir, QString);
 
 signals:
-    void parserfinished(QString,int);
-
-public slots:
+    void finished(QString);
 
 private:
-    QString m_sourceString;
-    int m_filetype;
+    QDir m_path;
+    QString m_saveToFileName;
 };
-
 #endif // PARSERTHREAD_H
+
+
+
