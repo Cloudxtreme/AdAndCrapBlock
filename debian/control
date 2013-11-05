@@ -1,0 +1,13 @@
+Source: adandcrapblock-1.0
+Section: misc
+Priority: extra
+Maintainer: Mike Krüger (memoryleakx) (This is my Key) <mikekrueger81@gmail.com>
+Build-Depends: debhelper (>= 8.0.0)
+Standards-Version: 3.9.2
+Homepage: https://github.com/memoryleakx/AdAndCrapBlock
+
+Package: adandcrapblock-1.0
+Architecture: any
+Depends: gksu
+Description: AdAndCrapBlock
+ This tool downloads the AdAway host-files and merge it into the file /etc/hosts
