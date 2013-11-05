@@ -1,16 +1,14 @@
-Package: adandcrapblock
 Source: adandcrapblock
-Version: 1.0
-Section: system
-Priority: optional
+Section: utils
+Priority: extra
 Maintainer: Mike Krüger <mikekrueger81@gmail.com>
-Uploaders: Mike Krüger <mikekrueger81@gmail.com>
-Build-Depends: debhelper (>= 7.0.50~),
-               intltool (>= 0.35.0),
-               libqt4-dev
+Build-Depends: debhelper (>= 8.0.0),
+	       libqt4-dev
+Standards-Version: 1.0
 Homepage: https://github.com/memoryleakx/AdAndCrapBlock
+
+Package: adandcrapblock
 Architecture: any
-Pre-Depends: dpkg (>= 1.15.7.2)
 Depends: gksu
 Description: AdAndCrapBlock
  This tool downloads the AdAway host-files and merge it into the file /etc/hosts

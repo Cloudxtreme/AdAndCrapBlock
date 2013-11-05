@@ -1,6 +1,5 @@
-adandcrapblock (1.0) saucy; urgency=low
+adandcrapblock (1.0-1) unstable; urgency=low
 
-  * New upstream release:
-    - Implement new parser, new order of events
+  * Initial release
 
--- Mike Krüger <mikekrueger81@gmail.com>  Fr, 1 Nov 2013 15:35:23 -0700
+ -- Mike Krüger <mikekrueger81@gmail.com>  Tue, 05 Nov 2013 19:48:36 +0100
