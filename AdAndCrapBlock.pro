@@ -10,7 +10,13 @@ QT       += network
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = AdAndCrapBlock
+target.path = /usr/bin
+INSTALLS += target
 TEMPLATE = app
+
+data.path = /usr/share/AdAndCrapBlock/icons
+data.files = icons/*
+INSTALLS += data
 
 
 SOURCES += main.cpp\
