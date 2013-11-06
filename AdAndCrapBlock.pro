@@ -18,6 +18,10 @@ data.path = /usr/share/AdAndCrapBlock/icons
 data.files = icons/*
 INSTALLS += data
 
+desktop.path = /usr/share/applications
+desktop.files = AdAndCrapBlock.desktop
+INSTALLS += desktop
+
 
 SOURCES += main.cpp\
         mainwindow.cpp \

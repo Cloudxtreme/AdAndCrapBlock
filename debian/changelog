@@ -1,5 +1,5 @@
-adandcrapblock-1.0 (1.0-1) precise; urgency=low
+adandcrapblock-1.0-precise (1.0-1) precise; urgency=low
 
-  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+  * Initial release
 
- -- Mike Krüger (memoryleakx) (This is my Key) <mikekrueger81@gmail.com>  Tue, 05 Nov 2013 21:23:34 +0100
+ -- Mike Krüger <mikekrueger81@gmail.com>  Wed, 06 Nov 2013 19:35:21 +0100
