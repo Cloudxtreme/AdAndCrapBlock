@@ -7,19 +7,19 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     connect(ui->actionExit,SIGNAL (triggered()), this, SLOT(close()));
-    m_urllist << "http://winhelp2002.mvps.org/hosts.txt"
+    m_urllist << "http://adaway.org/hosts.txt"
+              << "http://winhelp2002.mvps.org/hosts.txt"
+              << "http://hosts-file.net/ad_servers.asp"
               << "http://pgl.yoyo.org/adservers/serverlist.php?hostformat=hosts&showintro=0&mimetype=plaintext"
+              << "http://sysctl.org/cameleon/hosts"
               << "http://someonewhocares.org/hosts/hosts"
               << "http://www.malwaredomainlist.com/hostslist/hosts.txt"
               << "http://securemecca.com/Downloads/hosts.txt"
               << "http://www.hostsfile.org/Downloads/hosts.txt"
               << "http://adblock.gjtech.net/?format=hostfile"
+              << "http://pastebay.net/pastebay.php?dl=1346107"
               << "http://sites.google.com/site/logroid/files/hosts.txt"
-              << "http://hosts-file.net/ad_servers.asp"
-              << "http://sysctl.org/cameleon/hosts"
-              << "https://smarthosts.googlecode.com/svn/trunk/hosts"
-              << "https://veryhost.googlecode.com/files/windwos.txt"
-              << "http://hostsx.googlecode.com/svn/trunk/hosts";
+              << "https://veryhost.googlecode.com/files/windwos.txt";
 
     ui->label_2->setStyleSheet("QLabel { color : red; }");
     ui->label_2->setVisible(false);
