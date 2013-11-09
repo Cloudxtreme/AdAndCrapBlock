@@ -7,19 +7,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     connect(ui->actionExit,SIGNAL (triggered()), this, SLOT(close()));
-    m_urllist << "http://adaway.org/hosts.txt"
-              << "http://winhelp2002.mvps.org/hosts.txt"
-              << "http://hosts-file.net/ad_servers.asp"
-              << "http://pgl.yoyo.org/adservers/serverlist.php?hostformat=hosts&showintro=0&mimetype=plaintext"
-              << "http://sysctl.org/cameleon/hosts"
-              << "http://someonewhocares.org/hosts/hosts"
-              << "http://www.malwaredomainlist.com/hostslist/hosts.txt"
-              << "http://securemecca.com/Downloads/hosts.txt"
-              << "http://www.hostsfile.org/Downloads/hosts.txt"
-              << "http://adblock.gjtech.net/?format=hostfile"
-              << "http://pastebay.net/pastebay.php?dl=1346107"
-              << "http://sites.google.com/site/logroid/files/hosts.txt"
-              << "https://veryhost.googlecode.com/files/windwos.txt";
 
     ui->label_2->setStyleSheet("QLabel { color : red; }");
     ui->label_2->setVisible(false);
@@ -29,7 +16,69 @@ MainWindow::MainWindow(QWidget *parent) :
     m_parserThread = new parserThread(this);
     m_processSimThread = new processsimthread(this);
     m_pathhelper = new pathhelper(this);
+
     m_pathhelper->getTmpDir(m_workingDir);
+    m_pathhelper->getConfigDir(m_configDir);
+
+    QString urlListPath = m_configDir.canonicalPath() + m_configDir.separator() + "urllist";
+    QFile file(urlListPath);
+    if (!file.exists())
+    {
+        if ( file.open(QIODevice::ReadWrite) )
+        {
+            QTextStream stream( &file );
+            stream << "http://adaway.org/hosts.txt,1" << endl;
+            stream << "http://winhelp2002.mvps.org/hosts.txt,1" << endl;
+            stream << "http://hosts-file.net/ad_servers.asp,1" << endl;
+            stream << "http://pgl.yoyo.org/adservers/serverlist.php?hostformat=hosts&showintro=0&mimetype=plaintext,1" << endl;
+            stream << "http://sysctl.org/cameleon/hosts,1" << endl;
+            stream << "http://someonewhocares.org/hosts/hosts,1" << endl;
+            stream << "http://www.malwaredomainlist.com/hostslist/hosts.txt,1" << endl;
+            stream << "http://securemecca.com/Downloads/hosts.txt,1" << endl;
+            stream << "http://www.hostsfile.org/Downloads/hosts.txt,1" << endl;
+            stream << "http://adblock.gjtech.net/?format=hostfile,1" << endl;
+            stream << "http://pastebay.net/pastebay.php?dl=1346107,0" << endl;
+            stream << "http://sites.google.com/site/logroid/files/hosts.txt,1" << endl;
+            stream << "https://veryhost.googlecode.com/files/windwos.txt,1" << endl;
+        }
+        file.flush();
+        file.close();
+    }
+    QStringList splittlist;
+    QString line;
+    QFile ufile(urlListPath);
+    if (ufile.open(QIODevice::ReadOnly))
+    {
+        QTextStream in(&ufile);
+        while ( !in.atEnd() )
+        {
+            line = in.readLine();
+            splittlist = line.split(",");
+            if (splittlist.length() == 2)
+            {
+                QListWidgetItem *item = new QListWidgetItem(splittlist[0]);
+                item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+                if (splittlist[1] == "1")
+                {
+                    item->setCheckState(Qt::Checked);
+                }
+                else
+                {
+                    item->setCheckState(Qt::Unchecked);
+                }
+                ui->listWidget->addItem(item);
+                m_urllist << splittlist[0];
+            }
+            qDebug() << line;
+        }
+    }
+    ufile.flush();
+    ufile.close();
+    urlListPath = QString();
+    line = QString();
+    splittlist = QStringList();
+
+
 
     connect(m_processSimThread, SIGNAL(processValueChanged(int)), this, SLOT(workingProcessBar(int)));
     connect(m_downloader, SIGNAL(downloadCompleted(bool)), this, SLOT(downloadFinish(bool)));
@@ -122,6 +171,7 @@ void MainWindow::downloadNextFile(int index)
     }
 }
 
+//Backup your current hosts file [Backup]
 void MainWindow::on_pushButton_4_clicked()
 {
     QString filename = QFileDialog::getSaveFileName(this,
@@ -136,6 +186,7 @@ void MainWindow::on_pushButton_4_clicked()
     filename = QString();
 }
 
+//default File Button [Backup]
 void MainWindow::on_pushButton_5_clicked()
 {
     QString defaulthostsfile = "127.0.0.1 localhost";
@@ -154,4 +205,51 @@ void MainWindow::on_pushButton_5_clicked()
     m_pathhelper->cleanTmpDir(m_workingDir);
 
     defaulthostsfile = QString();
+}
+
+// delete item Button
+void MainWindow::on_pushButton_3_clicked()
+{
+    QString text = ui->listWidget->currentItem()->text();
+
+    if (ui->listWidget->currentItem()->isSelected())
+    {
+        text  += ",1";
+    }
+    else
+    {
+         text +=  ",0";
+    }
+
+    QStringList templist;
+    QString urlListPath = m_configDir.canonicalPath() + m_configDir.separator() + "urllist";
+    QFile ufile(urlListPath);
+    if (ufile.open(QIODevice::ReadOnly))
+    {
+        QTextStream in(&ufile);
+        while ( !in.atEnd() )
+        {
+            templist << in.readLine();
+        }
+    }
+    ufile.flush();
+    ufile.close();
+
+    templist.removeAll(text);
+
+    QFile fOut(urlListPath);
+      if (fOut.open(QFile::WriteOnly | QFile::Text))
+      {
+        QTextStream s(&fOut);
+        for (int i = 0; i < templist.size(); ++i)
+            s << templist[i] << '\n';
+      }
+      fOut.flush();
+      fOut.close();
+
+    QListWidgetItem* item = ui->listWidget->currentItem();
+    delete item;
+
+    templist = QStringList();
+    urlListPath = QString();
 }

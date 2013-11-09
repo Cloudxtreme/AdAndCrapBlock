@@ -16,6 +16,7 @@
 #include "processsimthread.h"
 #include <QUrl>
 #include <QFileDialog>
+#include <QCheckBox>
 
 namespace Ui {
 class MainWindow;
@@ -41,6 +42,8 @@ private slots:
 
     void on_pushButton_5_clicked();
 
+    void on_pushButton_3_clicked();
+
 private:
     Ui::MainWindow *ui;
     QStringList m_urllist;
@@ -51,6 +54,7 @@ private:
     pathhelper* m_pathhelper;
 
     QDir m_workingDir;
+    QDir m_configDir;
     void downloadNextFile(int index);
     int m_lastfileindex;
 

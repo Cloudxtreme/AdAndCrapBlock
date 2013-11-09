@@ -3,6 +3,7 @@
 pathhelper::pathhelper(QObject *parent) :
     QObject(parent)
 {
+
 }
 
 void pathhelper::getTmpDir(QDir &dir)
@@ -46,4 +47,21 @@ void pathhelper::getCompletePath(QDir dir, QString &path)
 void pathhelper::getCompleteHostsFileTmpPath(QDir dir, QString &path)
 {
     path  = dir.canonicalPath() + dir.separator() +  "hosts";
+}
+
+void pathhelper::getConfigDir(QDir &dir)
+{
+    dir = QDir::homePath() + "/.config";
+    this->checkConfigDir(dir);
+}
+
+void pathhelper::checkConfigDir(QDir &dir)
+{
+    bool exist = dir.exists("aacblock");
+    //check subdir
+    if (!exist)
+    {
+         dir.mkdir("aacblock");
+    }
+    dir.cd("aacblock");
 }
