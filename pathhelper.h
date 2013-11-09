@@ -13,9 +13,9 @@ public:
     void getTmpDir(QDir &dir);
     void getCompletePath(QDir, QString &path);
     void getCompleteHostsFileTmpPath(QDir, QString &path);
+    void cleanTmpDir(QDir);
 private:
     void checkTmpDir(QDir &dir);
-    void cleanTmpDir(QDir);
 };
 
 #endif // SYSTEM_H

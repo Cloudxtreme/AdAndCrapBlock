@@ -121,3 +121,37 @@ void MainWindow::downloadNextFile(int index)
        //workingDirStr = QString();
     }
 }
+
+void MainWindow::on_pushButton_4_clicked()
+{
+    QString filename = QFileDialog::getSaveFileName(this,
+    tr("Backup your current hosts file"),
+    QDir::homePath(),
+    tr("*.*"));
+    if( !filename.isNull() )
+    {
+        QFile::copy("/etc/hosts", filename);
+    }
+
+    filename = QString();
+}
+
+void MainWindow::on_pushButton_5_clicked()
+{
+    QString defaulthostsfile = "127.0.0.1 localhost";
+    QFile file(m_workingDir.canonicalPath() + m_workingDir.separator() + "default");
+    file.open(QIODevice::WriteOnly | QIODevice::Text);
+    QTextStream out(&file);
+    out << "127.0.0.1 localhost";
+    file.flush();
+    file.close();
+
+    QProcess copyProcess;
+    copyProcess.start("gksu \"mv " + m_workingDir.canonicalPath() + m_workingDir.separator() + "default" + " /etc/hosts\"");
+    while( copyProcess.waitForFinished());
+    copyProcess.close();
+
+    m_pathhelper->cleanTmpDir(m_workingDir);
+
+    defaulthostsfile = QString();
+}
