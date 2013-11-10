@@ -20,10 +20,13 @@ MainWindow::MainWindow(QWidget *parent) :
     m_pathhelper->getTmpDir(m_workingDir);
     m_pathhelper->getConfigDir(m_configDir);
 
-    QString urlListPath = m_configDir.canonicalPath() + m_configDir.separator() + "urllist";
-    QFile file(urlListPath);
+    m_sourcesPath = m_configDir.canonicalPath() + m_configDir.separator() + "sources";
+    m_origPath = m_configDir.canonicalPath() + m_configDir.separator() + "orig";
+
+    QFile file(m_sourcesPath);
     if (!file.exists())
     {
+        //create Sources File
         if ( file.open(QIODevice::ReadWrite) )
         {
             QTextStream stream( &file );
@@ -43,42 +46,11 @@ MainWindow::MainWindow(QWidget *parent) :
         }
         file.flush();
         file.close();
-    }
-    QStringList splittlist;
-    QString line;
-    QFile ufile(urlListPath);
-    if (ufile.open(QIODevice::ReadOnly))
-    {
-        QTextStream in(&ufile);
-        while ( !in.atEnd() )
-        {
-            line = in.readLine();
-            splittlist = line.split(",");
-            if (splittlist.length() == 2)
-            {
-                QListWidgetItem *item = new QListWidgetItem(splittlist[0]);
-                item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
-                if (splittlist[1] == "1")
-                {
-                    item->setCheckState(Qt::Checked);
-                }
-                else
-                {
-                    item->setCheckState(Qt::Unchecked);
-                }
-                ui->listWidget->addItem(item);
-                m_urllist << splittlist[0];
-            }
-            qDebug() << line;
-        }
-    }
-    ufile.flush();
-    ufile.close();
-    urlListPath = QString();
-    line = QString();
-    splittlist = QStringList();
 
-
+        //create Original List .. for restoring old data
+        this->runCommand("cp " + m_sourcesPath + " " + m_origPath);
+    }
+    this->readSourcesFile();
 
     connect(m_processSimThread, SIGNAL(processValueChanged(int)), this, SLOT(workingProcessBar(int)));
     connect(m_downloader, SIGNAL(downloadCompleted(bool)), this, SLOT(downloadFinish(bool)));
@@ -93,11 +65,7 @@ void MainWindow::parserReady(QString pathToHostsFile)
     ui->progressBar_2->setValue(0);
     ui->progressBar_2->setVisible(false);
 
-    QProcess copyProcess;
-    copyProcess.start("gksu \"mv " + pathToHostsFile + " /etc/hosts\"");
-    while( copyProcess.waitForFinished());
-    copyProcess.close();
-
+    this->runCommand("gksu \"mv " + pathToHostsFile + " /etc/hosts\"");
     m_processSimThread->Stop = true;
 }
 
@@ -149,11 +117,14 @@ void MainWindow::on_pushButton_clicked()
 
 MainWindow::~MainWindow()
 {
-    delete ui;
-
+    this->storeSourcesFile();
+    m_origPath = QString();
+    m_sourcesPath = QString();
     m_processSimThread->Stop = true;
     m_processSimThread->exit(0);
     m_parserThread->exit(0);
+
+    delete ui;
 }
 
 void MainWindow::downloadNextFile(int index)
@@ -197,10 +168,7 @@ void MainWindow::on_pushButton_5_clicked()
     file.flush();
     file.close();
 
-    QProcess copyProcess;
-    copyProcess.start("gksu \"mv " + m_workingDir.canonicalPath() + m_workingDir.separator() + "default" + " /etc/hosts\"");
-    while( copyProcess.waitForFinished());
-    copyProcess.close();
+    this->runCommand("gksu \"mv " + m_workingDir.canonicalPath() + m_workingDir.separator() + "default" + " /etc/hosts\"");
 
     m_pathhelper->cleanTmpDir(m_workingDir);
 
@@ -222,8 +190,8 @@ void MainWindow::on_pushButton_3_clicked()
     }
 
     QStringList templist;
-    QString urlListPath = m_configDir.canonicalPath() + m_configDir.separator() + "urllist";
-    QFile ufile(urlListPath);
+
+    QFile ufile(m_sourcesPath);
     if (ufile.open(QIODevice::ReadOnly))
     {
         QTextStream in(&ufile);
@@ -237,7 +205,7 @@ void MainWindow::on_pushButton_3_clicked()
 
     templist.removeAll(text);
 
-    QFile fOut(urlListPath);
+    QFile fOut(m_sourcesPath);
       if (fOut.open(QFile::WriteOnly | QFile::Text))
       {
         QTextStream s(&fOut);
@@ -251,5 +219,117 @@ void MainWindow::on_pushButton_3_clicked()
     delete item;
 
     templist = QStringList();
-    urlListPath = QString();
+}
+
+//reset sources list from orig file
+void MainWindow::on_pushButton_6_clicked()
+{
+    this->runCommand("cp " + m_origPath + " " + m_sourcesPath);
+    this->readSourcesFile();
+}
+
+
+void MainWindow::readSourcesFile()
+{
+    m_urllist.clear();
+    ui->listWidget->clear();
+    QStringList splittlist;
+    QString line;
+    QFile ufile(m_sourcesPath);
+    if (ufile.open(QIODevice::ReadOnly))
+    {
+        QTextStream in(&ufile);
+        while ( !in.atEnd() )
+        {
+            line = in.readLine();
+            splittlist = line.split(",");
+            if (splittlist.length() == 2)
+            {
+                QListWidgetItem *item = new QListWidgetItem(splittlist[0]);
+                item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+                if (splittlist[1] == "1")
+                {
+                    item->setCheckState(Qt::Checked);
+                }
+                else
+                {
+                    item->setCheckState(Qt::Unchecked);
+                }
+                ui->listWidget->addItem(item);
+                m_urllist << splittlist[0];
+            }
+        }
+    }
+    ufile.flush();
+    ufile.close();
+    line = QString();
+    splittlist = QStringList();
+}
+
+void MainWindow::runCommand(QString command)
+{
+    QProcess copyProcess;
+    copyProcess.start(command);
+    while( copyProcess.waitForFinished());
+    copyProcess.close();
+}
+
+void MainWindow::storeSourcesFile()
+{
+    QStringList templist;
+    QString url;
+    int count = ui->listWidget->count();
+    for(int index = 0;
+        index < count;
+        index++)
+    {
+        QListWidgetItem * item = ui->listWidget->item(index);
+        url = item->text();
+        if (item->checkState() == Qt::Checked)
+        {
+            url += ",1";
+        }
+        else
+        {
+            url += ",0";
+        }
+        templist << url;
+
+    }
+    QFile fOut(m_sourcesPath);
+      if (fOut.open(QFile::WriteOnly | QFile::Text))
+      {
+        QTextStream s(&fOut);
+        for (int i = 0; i < templist.size(); ++i)
+            s << templist[i] << '\n';
+      }
+      fOut.flush();
+      fOut.close();
+
+      templist = QStringList();
+      url = QString();
+}
+
+//add url Button
+void MainWindow::on_pushButton_2_clicked()
+{
+    m_addurldialog = new addurl(this);
+    connect(m_addurldialog, SIGNAL(urlAdded(QString)), this, SLOT(urlAddedToList(QString)));
+    m_addurldialog->show();
+    m_addurldialog->raise();
+    m_addurldialog->activateWindow();
+}
+
+void MainWindow::urlAddedToList(QString url)
+{
+    QFile file(m_sourcesPath);
+    if(file.open(QFile::Append | QFile::Text))
+    {
+       file.seek(file.size());
+       QTextStream out(&file);
+       out << url << ",1" <<  '\n';
+       file.flush();
+       file.close();
+    }
+    this->readSourcesFile();
 }

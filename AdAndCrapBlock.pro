@@ -28,15 +28,18 @@ SOURCES += main.cpp\
         downloader.cpp \
     parserthread.cpp \
     processsimthread.cpp \
-    pathhelper.cpp
+    pathhelper.cpp \
+    addurl.cpp
 
 HEADERS  += mainwindow.h \
     downloader.h \
     parserthread.h \
     processsimthread.h \
-    pathhelper.h
+    pathhelper.h \
+    addurl.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    addurl.ui
 
 RESOURCES += \
     AppResources.qrc
