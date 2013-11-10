@@ -11,7 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Add URL to a new hosts file</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="AppResources.qrc">
+    <normaloff>:/new/icons/icons/aacblock_small.png</normaloff>:/new/icons/icons/aacblock_small.png</iconset>
   </property>
   <widget class="QLineEdit" name="lineEdit">
    <property name="geometry">
@@ -56,6 +60,8 @@
    </property>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="AppResources.qrc"/>
+ </resources>
  <connections/>
 </ui>

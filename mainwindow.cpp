@@ -78,7 +78,7 @@ void MainWindow::downloadFinish(bool success)
     }
 
      qDebug() << m_lastfileindex + " " + (m_urllist.length() -1);
-    if (m_lastfileindex == (m_urllist.length() -1))
+    if (m_lastfileindex == (m_urllist.length()))
     {
         // finish
         qDebug() << "all files are downloaded!";
@@ -105,6 +105,10 @@ void MainWindow::workingProcessBar(int value)
 
 void MainWindow::on_pushButton_clicked()
 {
+    ui->label_2->setStyleSheet("QLabel { color : red; }");
+
+    this->storeSourcesFile();
+    this->readSourcesFile();
     m_processSimThread->start();
     ui->pushButton->setEnabled(false);
     ui->progressBar_2->setVisible(true);
@@ -129,17 +133,14 @@ MainWindow::~MainWindow()
 
 void MainWindow::downloadNextFile(int index)
 {
-    if (index <= (m_urllist.length() -1))
+    QString workingDirStr;
+    if (index <= (m_urllist.length()))
     {
-        QString workingDirStr;
         m_pathhelper->getCompletePath(m_workingDir,workingDirStr);
-        qDebug() << "working Dir: " + workingDirStr;
-
         QUrl freshURL(m_urllist[index]);
         m_downloader->Download(freshURL,workingDirStr);
-
-       //workingDirStr = QString();
     }
+    workingDirStr = QString();
 }
 
 //Backup your current hosts file [Backup]
@@ -215,9 +216,8 @@ void MainWindow::on_pushButton_3_clicked()
       fOut.flush();
       fOut.close();
 
-    QListWidgetItem* item = ui->listWidget->currentItem();
-    delete item;
 
+    this->readSourcesFile();
     templist = QStringList();
 }
 
@@ -250,13 +250,13 @@ void MainWindow::readSourcesFile()
                 if (splittlist[1] == "1")
                 {
                     item->setCheckState(Qt::Checked);
+                    m_urllist << splittlist[0];
                 }
                 else
                 {
                     item->setCheckState(Qt::Unchecked);
                 }
                 ui->listWidget->addItem(item);
-                m_urllist << splittlist[0];
             }
         }
     }
@@ -264,6 +264,7 @@ void MainWindow::readSourcesFile()
     ufile.close();
     line = QString();
     splittlist = QStringList();
+    qDebug() << m_urllist;
 }
 
 void MainWindow::runCommand(QString command)
@@ -314,7 +315,14 @@ void MainWindow::storeSourcesFile()
 void MainWindow::on_pushButton_2_clicked()
 {
     m_addurldialog = new addurl(this);
+
+    int WIDTH = 455;
+    int HEIGHT = 93;
+
     connect(m_addurldialog, SIGNAL(urlAdded(QString)), this, SLOT(urlAddedToList(QString)));
+    m_addurldialog->resize(WIDTH, HEIGHT);
+    m_addurldialog->setFixedSize(WIDTH, HEIGHT);
+
     m_addurldialog->show();
     m_addurldialog->raise();
     m_addurldialog->activateWindow();
