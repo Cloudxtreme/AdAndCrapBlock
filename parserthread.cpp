@@ -39,6 +39,8 @@ void parserThread::run()
     int parts = 0;
     int value = 0;
 
+    //the first is localhost
+    editeddatalist << "127.0.0.1 localhost";
 
     for (int i =0; i < txtFiles.length(); i++)
     {
@@ -66,21 +68,33 @@ void parserThread::run()
                         if (splittlist.length() > 1)
                         {
                             splittStr = splittlist[0];
-                            qDebug() << splittStr;
+                            //qDebug() << splittStr;
                             // save the rest of the String for Later!
-                            subStr = splittlist[1];
-                            subStr = subStr.trimmed();
+
+                            //Jump over all Whitespaces
+                            for (int x = 1; x < splittlist.length(); x++)
+                            {
+                                if (splittlist[x] != "")
+                                {
+                                    parts = x;
+                                    break;
+                                }
+                            }
+                            subStr = splittlist[parts].trimmed();
+                            qDebug() << subStr;
+                            parts = 0;
+
 
                             splittlist.clear();
                             splittlist = splittStr.split(".");
                             parts = splittlist.length();
-                            qDebug() << parts;
+                            //qDebug() << parts;
                             // IP Check
                             if (parts == 4)
                             {
                                 // Build the clean IP String
                                 IP = splittlist.join(".");
-                                qDebug() << IP;
+                                //qDebug() << IP;
                             }
                             splittlist.clear();
 
@@ -89,33 +103,26 @@ void parserThread::run()
                             if (value > 0)
                             {
                                 subStr = subStr.mid(0, value - 1);
+                                qDebug() << subStr;
 
                             }
-                            if (subStr == "localhost")
+
+                            splittlist = subStr.split(".");
+                            parts = splittlist.length();
+                            if (parts >= 2)
                             {
+                                // OK! is a vailed HostName
                                 HostName = subStr;
-                                line = IP + " " + HostName;
-                                if (!editeddatalist.contains(line))
-                                     editeddatalist << line;
-                            }
-                            else
-                            {
-                                splittlist = subStr.split(".");
-                                parts = splittlist.length();
-                                if (parts >= 2)
+                                if (IP.length() != 0)
                                 {
-                                    // OK! is a vailed HostName
-                                    HostName = subStr;
-                                    if (IP.length() != 0)
-                                    {
-                                        // Yeah! all work is Done .. for this Line !!
-                                        line = IP + " " + HostName;
-                                        if (!editeddatalist.contains(line))
-                                             editeddatalist << line;
-                                    }
+                                   // Yeah! all work is Done .. for this Line !!
+                                   line = IP + " " + HostName;
+                                   if (!editeddatalist.contains(line))
+                                        editeddatalist << line;
                                 }
-                                splittlist.clear();
-                            }
+                             }
+                             splittlist.clear();
+
                         }
                     }
                 }

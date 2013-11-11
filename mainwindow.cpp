@@ -40,8 +40,7 @@ MainWindow::MainWindow(QWidget *parent) :
             stream << "http://securemecca.com/Downloads/hosts.txt,1" << endl;
             stream << "http://www.hostsfile.org/Downloads/hosts.txt,1" << endl;
             stream << "http://adblock.gjtech.net/?format=hostfile,1" << endl;
-            stream << "http://pastebay.net/pastebay.php?dl=1346107,0" << endl;
-            stream << "http://sites.google.com/site/logroid/files/hosts.txt,1" << endl;
+            stream << "http://pastebay.net/pastebay.php?dl=1346107,1" << endl;
             stream << "https://veryhost.googlecode.com/files/windwos.txt,1" << endl;
         }
         file.flush();
@@ -105,6 +104,7 @@ void MainWindow::workingProcessBar(int value)
 
 void MainWindow::on_pushButton_clicked()
 {
+    m_pathhelper->getTmpDir(m_workingDir);
     ui->label_2->setStyleSheet("QLabel { color : red; }");
 
     this->storeSourcesFile();

@@ -5,6 +5,8 @@
 
 int main(int argc, char *argv[])
 {
+    const QString pVersion = "1.5";
+
     QApplication a(argc, argv);
     QDesktopWidget *desktop = QApplication::desktop();
     MainWindow window;
@@ -26,7 +28,7 @@ int main(int argc, char *argv[])
     window.resize(WIDTH, HEIGHT);
     window.setFixedSize(WIDTH, HEIGHT);
     window.move( x, y );
-    window.setWindowTitle("Ad and Crap Block");
+    window.setWindowTitle("Ad and Crap Block " + pVersion);
     window.show();
 
     return a.exec();
