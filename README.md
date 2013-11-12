@@ -16,7 +16,7 @@ yaourt -S adandcrapblock
 </pre>
 
 <h2>Screenshot</h2>
-<img src='http://www5.picfront.org/token/8S2x/2013/11/11/2155241.png' alt='adandcrapblock 1.5' />
+<img src='https://lh5.googleusercontent.com/-RTDUiOUdSCE/UoExYS0mcLI/AAAAAAAABaw/5lmxY1g8hpQ/w742-h428-no/adandcrapblock15.png' alt='adandcrapblock 1.5' />
 
 <img src="https://github.com/memoryleakx/AdAndCrapBlock/blob/master/icons/aacblock_big.png?raw=true" alt="logo" border="0">
 
